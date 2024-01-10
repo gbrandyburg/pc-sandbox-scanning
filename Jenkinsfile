@@ -36,7 +36,7 @@ pipeline {
             steps {
               sshagent(credentials: ['ssh']) {
                 withCredentials([
-                   string(credentialsId: 'PCC_CONSOLE_URL', variable: 'PCC_CONSOLE_URL'),
+                   //string(credentialsId: 'PCC_CONSOLE_URL', variable: 'PCC_CONSOLE_URL'),
                    string(credentialsId: 'PRISMA_ACCESS_KEY', variable: 'PRISMA_ACCESS_KEY'),
                    string(credentialsId: 'PRISMA_SECRET_KEY', variable: 'PRISMA_SECRET_KEY'),
                    string(credentialsId: 'PCC_CONSOLE_HOST', variable: 'PCC_CONSOLE_HOST')
@@ -44,18 +44,15 @@ pipeline {
                    sh '''
                    #This  command will generate an authorization token (Only valid for 1 hour)
                    json_auth_data="$(printf '{ "username": "%s", "password": "%s" }' "${PRISMA_ACCESS_KEY}" "${PRISMA_SECRET_KEY}")"
-                   #debug
-                   #ping $PCC_CONSOLE_HOST
-                   curl -k https://app0.cloud.twistlock.com/app0-93081858
-
-                   token=$(curl -sSLk -d "$json_auth_data" -H 'content-type: application/json' "$PCC_CONSOLE_URL/api/v1/authenticate" | python3 -c 'import sys, json; print(json.load(sys.stdin)["token"])')
+                   
+                   token=$(curl -sSLk -d "$json_auth_data" -H 'content-type: application/json' "https://app0.cloud.twistlock.com/app0-93081858/api/v1/authenticate" | python3 -c 'import sys, json; print(json.load(sys.stdin)["token"])')
 
                    [ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh
                    ssh-keyscan -t rsa,dsa 10.0.2.103 >> ~/.ssh/known_hosts
                    sshpass -p 'Password.1!!' ssh labuser@10.0.2.103 'bash -s' <<EOF
                    wget https://cloudlabsdemo99.s3.amazonaws.com/sandbox.sh
                    echo 'Password.1!!' | sudo -S chmod +x /home/labuser/sandbox.sh
-                   echo 'Password.1!!' | sudo -S PCC_CONSOLE_URL=$PCC_CONSOLE_URL token=$token ECR_REPOSITORY=$ECR_REPOSITORY CONTAINER_NAME=$CONTAINER_NAME /home/labuser/sandbox.sh
+                   echo 'Password.1!!' | sudo -S PCC_CONSOLE_URL=https://app0.cloud.twistlock.com/app0-93081858 token=$token ECR_REPOSITORY=$ECR_REPOSITORY CONTAINER_NAME=$CONTAINER_NAME /home/labuser/sandbox.sh
                    exit
                    EOF
                    '''
