@@ -38,7 +38,8 @@ pipeline {
                 withCredentials([
                    string(credentialsId: 'PCC_CONSOLE_URL', variable: 'PCC_CONSOLE_URL'),
                    string(credentialsId: 'PRISMA_ACCESS_KEY', variable: 'PRISMA_ACCESS_KEY'),
-                   string(credentialsId: 'PRISMA_SECRET_KEY', variable: 'PRISMA_SECRET_KEY')
+                   string(credentialsId: 'PRISMA_SECRET_KEY', variable: 'PRISMA_SECRET_KEY'),
+                   string(credentialsId: 'PCC_CONSOLE_HOST', variable: 'PCC_CONSOLE_HOST')
                    ]) {
                    sh '''
                    #This  command will generate an authorization token (Only valid for 1 hour)
