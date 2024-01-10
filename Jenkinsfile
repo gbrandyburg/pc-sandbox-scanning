@@ -44,7 +44,7 @@ pipeline {
                    #This  command will generate an authorization token (Only valid for 1 hour)
                    json_auth_data="$(printf '{ "username": "%s", "password": "%s" }' "${PRISMA_ACCESS_KEY}" "${PRISMA_SECRET_KEY}")"
                    #debug
-                   ping $PCC_CONSOLE_URL
+                   ping $PCC_CONSOLE_HOST
 
                    token=$(curl -sSLk -d "$json_auth_data" -H 'content-type: application/json' "$PCC_CONSOLE_URL/api/v1/authenticate" | python3 -c 'import sys, json; print(json.load(sys.stdin)["token"])')
 
